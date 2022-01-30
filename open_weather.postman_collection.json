@@ -1,0 +1,198 @@
+{
+	"info": {
+		"_postman_id": "84af3b72-c153-4b86-8a35-2d44f57d1cdb",
+		"name": "open_weather",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Get weather",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"var city = pm.environment.get(\"cityName\");",
+							"",
+							"pm.test(\"Correct city name is return\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.name).to.eql(pm.variables.get(\"cityName\"));",
+							"});",
+							"",
+							"// pm.test(\"Correct city name is return\", function () {",
+							"//     var jsonData = pm.response.json();",
+							"//     pm.expect(jsonData.name).to.oneOf(['Kyiv', 'London', 'Lviv', 'Paris']);",
+							"// });",
+							"",
+							"var jsonData = JSON.parse(responseBody); ",
+							"pm.environment.set(\"id\", jsonData[\"id\"]);"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"function random_item(items)",
+							"{  ",
+							"    return items[Math.floor(Math.random()*items.length)];     ",
+							"}",
+							"",
+							"var items = ['Kyiv', 'London', 'Lviv', 'Paris', 'Rome'];",
+							"",
+							"// pm.collectionVariables.set(\"cityName\",",
+							"// pm.variables.replaceIn(random_item(items)));",
+							"",
+							"pm.environment.set(\"cityName\", random_item(items));"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{env}}/data/2.5/weather?q={{cityName}}&APPID={{APPID}}",
+					"host": [
+						"{{env}}"
+					],
+					"path": [
+						"data",
+						"2.5",
+						"weather"
+					],
+					"query": [
+						{
+							"key": "q",
+							"value": "{{cityName}}"
+						},
+						{
+							"key": "APPID",
+							"value": "{{APPID}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Description language test",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Description is return in a valid lang\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.weather[0].description).to.oneOf(['хмарно', 'рвані хмари', 'сонячно', 'чисте небо']);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{env}}/data/2.5/weather?id={{id}}&appid={{APPID}}&lang=ua",
+					"host": [
+						"{{env}}"
+					],
+					"path": [
+						"data",
+						"2.5",
+						"weather"
+					],
+					"query": [
+						{
+							"key": "id",
+							"value": "{{id}}"
+						},
+						{
+							"key": "appid",
+							"value": "{{APPID}}"
+						},
+						{
+							"key": "lang",
+							"value": "ua"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[negative] Get weather",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"City was not found\", function () {",
+							"    pm.response.to.have.status(404);",
+							"});",
+							"var city = pm.environment.get(\"cityName\");",
+							"",
+							"pm.test(\"Correct error message is return\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.message).to.eql(\"city not found\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"pm.environment.set(\"cityName\", \"Test\");"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{env}}/data/2.5/weather?q={{cityName}}&APPID={{APPID}}",
+					"host": [
+						"{{env}}"
+					],
+					"path": [
+						"data",
+						"2.5",
+						"weather"
+					],
+					"query": [
+						{
+							"key": "q",
+							"value": "{{cityName}}"
+						},
+						{
+							"key": "APPID",
+							"value": "{{APPID}}"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "cityName",
+			"value": ""
+		},
+		{
+			"key": "q",
+			"value": ""
+		}
+	]
+}
